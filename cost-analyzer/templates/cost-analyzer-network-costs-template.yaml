@@ -14,8 +14,15 @@ spec:
       app: {{ template "cost-analyzer.networkCostsName" . }}
   template:
     metadata:
+      {{- with .Values.networkCosts.annotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       labels:
         app: {{ template "cost-analyzer.networkCostsName" . }}
+        {{- if .Values.networkCosts.additionalLabels }}
+        {{ toYaml .Values.networkCosts.additionalLabels | nindent 8 }}
+        {{- end }}
     spec:
       hostNetwork: true
       serviceAccountName: {{ template "cost-analyzer.serviceAccountName" . }}
@@ -29,7 +36,7 @@ spec:
 {{- end }}
 {{- if .Values.networkCosts.resources }}
         resources:
-{{ toYaml .Values.networkCosts.resources | indent 10 }}
+          {{ toYaml .Values.networkCosts.resources | indent 10 }}
 {{- end }}
         env:
         {{- if .Values.networkCosts.hostProc }}
@@ -69,7 +76,7 @@ spec:
 {{- if .Values.networkCosts.priorityClassName }}
       priorityClassName: "{{ .Values.networkCosts.priorityClassName }}"
 {{- end }}
-      {{- with .Values.nodeSelector }}
+      {{- with .Values.networkCosts.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 10 }}
       {{- end }}
